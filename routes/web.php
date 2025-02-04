@@ -39,9 +39,9 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     $from = $request['data']['payload']['from'];
     $event = $request['data']['event_type'];
     Log::info($from);
-
+    Log::info($event);
     if($from == '+14157234000' && $event == 'call.answered'){
-        Log::info('call identified');
+        Log::info('call answered');
         $to = $request['data']['payload']['to'];
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
