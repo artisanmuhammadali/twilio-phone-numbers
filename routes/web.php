@@ -30,41 +30,14 @@ Route::get('/verify-number/{phone_number}', function () {
     $data = $validation_request->toArray();
     
     $formattedString = implode(' ', str_split($data['validationCode']));
-    $tts = new VoiceRSS;
-    $voice = $tts->speech([
-        'key' => env('VOICE_RSS_API_KEY'),
-        'hl' =>  'en-gb',
-        'v'  => 'Alice',
-        'src' => $formattedString,
-        'r' => '0',
-        'c' => 'mp3',
-        'f' => '44khz_16bit_stereo',
-        'ssml' => 'false',
-        'b64' => 'true',
-        'ssl' => '1'
-    ]);
-
-    $filename = Str::uuid().'.mp3';
-    if( empty($voice["error"]) ) {		
-
-        $rawData = $voice["response"];	
-        
-        if (!File::exists(public_path('speeches'))) {
-            // Create the directory inside public
-            File::makeDirectory(public_path('speeches'), 0755, true);
-        }
-        
-        // Store the file
-        Storage::disk('public')->put('speeches/' . $filename, $rawData);
-        $speechFilelink =  asset('speeches/'.$filename);
-    }
+    $speechFilelink = Str::toAudio($formattedString);
     NumberVerification::create([
         'number'=> $number,
         'code'=>$data['validationCode'],
         'callSid'=>$data['callSid'],
         'voice'=>$speechFilelink
     ]);
-    return $voice;
+    return $speechFilelink;
 });
 
 
@@ -81,16 +54,11 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            $formattedString = implode(' ', str_split($verification->code));
-            // $response = new VoiceResponse();
-            // $response->say($formattedString);
-            Log::info($formattedString);
-            return response('<?xml version="1.0" encoding="UTF-8"?>
-                            <Response>
-                            <Answer>
-                                <Say voice="alice">'.$formattedString.'</Say>
-                            </Answer>
-                            </Response>', 200);
+            $voice = 
+            $response = new VoiceResponse();
+            $response->play('https://api.twilio.com/cowbell.mp3');
+
+            return $response;
             // return true;
         }
     }
