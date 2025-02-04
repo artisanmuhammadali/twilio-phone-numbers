@@ -36,14 +36,13 @@ return [
             'serve' => true,
             'throw' => false,
         ],
-
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => public_path('uploads'), // Change from storage_path('app/public')
+            'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
-            'throw' => false,
         ],
+
         'speeches' => [
             'driver' => 'local',
             'root' => storage_path('app/public/speeches'),

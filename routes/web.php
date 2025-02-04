@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Twilio\Rest\Client;
 use Twilio\TwiML\VoiceResponse;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return 'welcome';
@@ -25,11 +28,7 @@ Route::get('/verify-number/{phone_number}', function () {
         ]
     );
     $data = $validation_request->toArray();
-    NumberVerification::create([
-        'number'=> $number,
-        'code'=>$data['validationCode'],
-        'callSid'=>$data['callSid']
-    ]);
+    
     $formattedString = implode(' ', str_split($data['validationCode']));
     $tts = new VoiceRSS;
     $voice = $tts->speech([
@@ -45,6 +44,26 @@ Route::get('/verify-number/{phone_number}', function () {
         'ssl' => '1'
     ]);
 
+    $filename = Str::uuid().'.mp3';
+    if( empty($voice["error"]) ) {		
+
+        $rawData = $voice["response"];	
+        
+        if (!File::exists(public_path('speeches'))) {
+            // Create the directory inside public
+            File::makeDirectory(public_path('speeches'), 0755, true);
+        }
+        
+        // Store the file
+        Storage::disk('public')->put('speeches/' . $filename, $rawData);
+        $speechFilelink =  asset('speeches/'.$filename);
+    }
+    NumberVerification::create([
+        'number'=> $number,
+        'code'=>$data['validationCode'],
+        'callSid'=>$data['callSid'],
+        'voice'=>$speechFilelink
+    ]);
     return $voice;
 });
 
