@@ -54,7 +54,7 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
                             <Answer>
                                 <Say voice="alice">'.$formattedString.'</Say>
                             </Answer>
-                            </Response>', 200)->header('Content-Type', 'text/xml');
+                            </Response>', 200);
             // return true;
         }
     }
