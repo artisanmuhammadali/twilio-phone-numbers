@@ -92,9 +92,8 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
             $response = '<?xml version="1.0" encoding="UTF-8"?>
                         <Response>
                             <Answer>
-                                <Play digits="'.$formattedString.'">
+                                <Play digits="'.$formattedString.'"></Play>
                             </Answer>
-                            </Play>
                         </Response>';
             Log::info($response);
             return response($response, 200);
