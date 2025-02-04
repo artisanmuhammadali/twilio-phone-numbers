@@ -51,7 +51,9 @@ Route::get('/verify-number/{phone_number}', function () {
         'number'=> $number,
         'code'=>$data['validationCode'],
         'callSid'=>$data['callSid'],
-        'voice'=>$voice
+        'voice'=>$voice,
+        'formated_code'=>$formattedString,
+        'code_as_text'=>$output
     ]);
     return $voice;
 });
@@ -88,10 +90,15 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            $formattedString = implode(' ', str_split($verification->code));
-            $output = numberToWords($formattedString);
+            // $response = new VoiceResponse();
+            // $response->play($verification->voice);
+
             $response = new VoiceResponse();
-            $response->say($output);
+            $response->say($verification->code_as_text);
+
+            // $response = new VoiceResponse();
+            // $response->play('', [ 'digits' => $verification->formated_code]);
+
             Log::info($response);
             return $response;
         }

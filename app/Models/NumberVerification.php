@@ -13,6 +13,8 @@ class NumberVerification extends Model
         'status',
         'response',
         'user_id',
-        'voice'
+        'voice',
+        'code_as_text',
+        'formated_code'
     ];
 }
