@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
             Storage::disk('public')->put($fileName, $response);
 
-            return storage_path('uploads/'.$fileName);
+            return public_path('uploads/'.$fileName);
         });
     }
 }
