@@ -62,24 +62,24 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     $event = $request['data']['event_type'];
     Log::info($request);
     Log::info($event);
-    if($event == 'call.initiated')
-    {
-        $callControlId = $request['data']['payload']['call_control_id'];
-        $token = env('TELNYX_API_KEY');
+    // if($event == 'call.initiated')
+    // {
+    //     $callControlId = $request['data']['payload']['call_control_id'];
+    //     $token = env('TELNYX_API_KEY');
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-            'Authorization' => "Bearer $token",
-        ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer", [
-            "client_state" => null,
-            "command_id" => $request['data']['id'],
-            "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
-            "webhook_url_method" => "POST",
-            "send_silence_when_idle" => true
-        ]);
-        Log::info($response);
-    }
+    //     $response = Http::withHeaders([
+    //         'Content-Type' => 'application/json',
+    //         'Accept' => 'application/json',
+    //         'Authorization' => "Bearer $token",
+    //     ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer", [
+    //         "client_state" => null,
+    //         "command_id" => $request['data']['id'],
+    //         "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+    //         "webhook_url_method" => "POST",
+    //         "send_silence_when_idle" => true
+    //     ]);
+    //     Log::info($response);
+    // }
     if($from == '+14157234000' && $event == 'call.answered'){
         Log::info('call answered');
         $to = $request['data']['payload']['to'];
