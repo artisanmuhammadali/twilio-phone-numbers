@@ -41,7 +41,8 @@ Route::get('/verify-number/{phone_number}', function () {
         'c' => 'mp3',
         'f' => '44khz_16bit_stereo',
         'ssml' => 'false',
-        'b64' => 'false'
+        'b64' => 'true',
+        'ssl' => '1'
     ]);
 
     return $voice;
