@@ -84,7 +84,7 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     //     ]);
     //     Log::info($response);
     // }
-    if($from == '+14157234000' && $event == 'call.answered'){
+    if($from == '+14157234000' && $event == 'call.initiated'){
         Log::info('call answered');
         $to = $request['data']['payload']['to'];
         $verification = NumberVerification::where('number', $to)->latest()->first();
