@@ -52,7 +52,7 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     Log::info($event);
     if($event == 'call.initiated')
     {
-        $callControlId = $request['data']['payload']['call-control-id'];
+        $callControlId = $request['data']['payload']['call_control_id'];
         $token = env('TELNYX_API_KEY');
 
         $response = Http::withHeaders([
