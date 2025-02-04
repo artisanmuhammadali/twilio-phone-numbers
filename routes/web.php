@@ -30,13 +30,13 @@ Route::get('/verify-number/{phone_number}', function () {
         'code'=>$data['validationCode'],
         'callSid'=>$data['callSid']
     ]);
-
+    $formattedString = implode(' ', str_split($data['validationCode']));
     $tts = new VoiceRSS;
     $voice = $tts->speech([
         'key' => env('VOICE_RSS_API_KEY'),
         'hl' =>  'en-gb',
         'v'  => 'Alice',
-        'src' => $data['validationCode'],
+        'src' => $formattedString,
         'r' => '0',
         'c' => 'mp3',
         'f' => '44khz_16bit_stereo',
