@@ -31,13 +31,14 @@ Route::get('/verify-number/{phone_number}', function () {
     
     $formattedString = implode(' ', str_split($data['validationCode']));
     $speechFilelink = Str::toAudio($formattedString);
+    $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$speechFilelink);
     NumberVerification::create([
         'number'=> $number,
         'code'=>$data['validationCode'],
         'callSid'=>$data['callSid'],
-        'voice'=>$speechFilelink
+        'voice'=>$voice
     ]);
-    return $speechFilelink;
+    return $voice;
 });
 
 
@@ -54,12 +55,10 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$verification->voice);
             $response = new VoiceResponse();
-            $response->play($voice);
-
+            $response->play($verification->voice);
+            Log::info($response);
             return $response;
-            // return true;
         }
     }
     
