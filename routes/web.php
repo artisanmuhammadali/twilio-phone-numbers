@@ -79,7 +79,7 @@ Route::any('/receive-verification-callback' , function(Request $request){
     return true;
 });
 
-Route::any('/get-response' , function(Request $request){
-  $verification = NumberVerification::all();  
-  return response()->json($verification);
+Route::any('/get-response' , function(){
+    $verification = NumberVerification::latest()->get();  
+    return response()->json($verification);
 });
