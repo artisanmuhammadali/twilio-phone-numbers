@@ -20,7 +20,7 @@ Route::get('/verify-number/{phone_number}', function () {
         "+".$number,
         [
             "friendlyName" => "Third Party VOIP Number",
-            "statusCallback" => "https://3dcd-182-191-73-121.ngrok-free.app/receive-verification-callback",
+            "statusCallback" => env('TWILIO_CALLBACK_URL'),
         ]
     );
     $data = $validation_request->toArray();
