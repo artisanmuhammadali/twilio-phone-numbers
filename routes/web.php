@@ -42,17 +42,20 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     // $response->say('12', ['loop' => 2]);
     // $response->play('12', ['digits' => '12']);
     // return $response;
+    return true;
 });
 
 Route::any('/listen-to-twilio-verification-call-failed' , function(Request $request){
     // 14157234000
     Log::info('listen-to-twilio-verification-call-failed');
     Log::info($request->ip());
+    return true;
 });
 Route::any('/listen-to-twilio-verification-call-progress' , function(Request $request){
     // 14157234000
     Log::info('listen-to-twilio-verification-call-progress');
     Log::info($request->ip());
+    return true;
 });
 
 
@@ -60,4 +63,5 @@ Route::any('/receive-verification-callback' , function(Request $request){
     Log::info('receive-verification-callback');
     NumberVerification::where('CallSid', $request->CallSid)->update(['response'=>json_encode($request->all()) , 'status'=>$request->VerificationStatus]);
     Log::info($request);
+    return true;
 });
