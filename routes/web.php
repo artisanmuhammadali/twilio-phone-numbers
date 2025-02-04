@@ -54,7 +54,7 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            $voice = $verification->voice;
+            $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$verification->voice);
             $response = new VoiceResponse();
             $response->play($voice);
 
