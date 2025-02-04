@@ -85,18 +85,17 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     //     Log::info($response);
     // }
     if($from == '+14157234000' && $event == 'call.initiated'){
-        Log::info('call answered');
         $to = $request['data']['payload']['to'];
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
             //method 1
-            $response = new VoiceResponse();
-            $response->play($verification->voice);
+            // $response = new VoiceResponse();
+            // $response->play($verification->voice);
 
             //method 2
-            // $response = new VoiceResponse();
-            // $response->say($verification->code_as_text);
+            $response = new VoiceResponse();
+            $response->say($verification->code_as_text);
 
             //method 3
             // $response = new VoiceResponse();
