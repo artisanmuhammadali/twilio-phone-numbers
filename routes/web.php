@@ -49,7 +49,7 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
             $formattedString = implode(' ', str_split($verification->code));
             $response = new VoiceResponse();
             $response->say($formattedString);
-            Log::info($response);
+            Log::info('return' . $event);
             return $response;
             // return true;
         }
