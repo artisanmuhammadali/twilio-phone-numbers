@@ -47,10 +47,14 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         Log::info('get otp from db');
         if($verification){
             $formattedString = implode(' ', str_split($verification->code));
-            $response = new VoiceResponse();
-            $response->say($formattedString);
-            Log::info('return' . $event);
-            return $response;
+            // $response = new VoiceResponse();
+            // $response->say($formattedString);
+            return response('<?xml version="1.0" encoding="UTF-8"?>
+                            <Response>
+                            <Answer>
+                                <Say voice="alice">'.$formattedString.'</Say>
+                            </Answer>
+                            </Response>', 200)->header('Content-Type', 'text/xml');
             // return true;
         }
     }
@@ -68,7 +72,12 @@ Route::any('/listen-to-twilio-verification-call-progress' , function(Request $re
     // 14157234000
     Log::info('listen-to-twilio-verification-call-progress');
     Log::info($request->ip());
-    return true;
+    return response('<?xml version="1.0" encoding="UTF-8"?>
+    <Response>
+    <Answer>
+        <Say voice="alice">Hi</Say>
+    </Answer>
+    </Response>', 200)->header('Content-Type', 'text/xml');
 });
 
 
