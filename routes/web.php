@@ -90,14 +90,17 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            // $response = new VoiceResponse();
-            // $response->play($verification->voice);
+            //method 1
+            $response = new VoiceResponse();
+            $response->play($verification->voice);
 
+            //method 2
             // $response = new VoiceResponse();
             // $response->say($verification->code_as_text);
 
-            $response = new VoiceResponse();
-            $response->play('', [ 'digits' => $verification->formated_code]);
+            //method 3
+            // $response = new VoiceResponse();
+            // $response->play('', [ 'digits' => $verification->formated_code]);
 
             Log::info($response);
             return $response;
