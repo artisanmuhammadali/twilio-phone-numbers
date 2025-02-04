@@ -34,7 +34,8 @@ Route::get('/verify-number/{phone_number}', function () {
     $tts = new VoiceRSS;
     $voice = $tts->speech([
         'key' => env('VOICE_RSS_API_KEY'),
-        'hl' =>  'en-gb:Alice',
+        'hl' =>  'en-gb',
+        'v'  => 'Alice',
         'src' => $data['validationCode'],
         'r' => '0',
         'c' => 'mp3',
