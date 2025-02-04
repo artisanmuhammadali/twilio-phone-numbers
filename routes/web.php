@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
+function numberToWords($input) {
+    $numbers = explode(' ', $input);
+    $formatter = new NumberFormatter('en', NumberFormatter::SPELLOUT);
+    
+    $words = array_map(function($number) use ($formatter) {
+        return $formatter->format($number);
+    }, $numbers);
+
+    return implode(' ', $words);
+}
+
 Route::get('/', function () {
     return 'welcome';
 });
@@ -31,16 +42,7 @@ Route::get('/verify-number/{phone_number}', function () {
     $data = $validation_request->toArray();
     
     $formattedString = implode(' ', str_split($data['validationCode']));
-    function numberToWords($input) {
-        $numbers = explode(' ', $input);
-        $formatter = new NumberFormatter('en', NumberFormatter::SPELLOUT);
-        
-        $words = array_map(function($number) use ($formatter) {
-            return $formatter->format($number);
-        }, $numbers);
     
-        return implode(' ', $words);
-    }
     
     $output = numberToWords($formattedString);
     $speechFilelink = Str::toAudio($output);
@@ -87,17 +89,11 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         Log::info('get otp from db');
         if($verification){
             $formattedString = implode(' ', str_split($verification->code));
-            // $response = new VoiceResponse();
-            // $response->play('', ['digits' => $formattedString]);
-            $response = '<?xml version="1.0" encoding="UTF-8"?>
-                        <Response>
-                            <Answer>
-                                <Play digits="'.$formattedString.'"/>
-                            </Answer>
-                        </Response>';
+            $output = numberToWords($formattedString);
+            $response = new VoiceResponse();
+            $response->say($output);
             Log::info($response);
-            return response($response, 200);
-            // return $response;
+            return $response;
         }
     }
     
