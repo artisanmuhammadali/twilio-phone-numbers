@@ -9,6 +9,7 @@ use Twilio\Rest\Client;
 use Twilio\TwiML\VoiceResponse;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
@@ -47,8 +48,25 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     Log::info('listen-to-twilio-verification-call');
     $from = $request['data']['payload']['from'];
     $event = $request['data']['event_type'];
-    Log::info($from);
+    Log::info($request);
     Log::info($event);
+    if($event == 'call.initiated')
+    {
+        $callControlId = $request['data']['payload']['call-control-id'];
+        $token = env('TELNYX_API_KEY');
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => "Bearer $token",
+        ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer", [
+            "client_state" => null,
+            "command_id" => "891510ac-f3e4-11e8-af5b-de00688a4901",
+            "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+            "webhook_url_method" => "POST",
+            "send_silence_when_idle" => true
+        ]);
+    }
     if($from == '+14157234000' && $event == 'call.answered'){
         Log::info('call answered');
         $to = $request['data']['payload']['to'];
@@ -65,10 +83,10 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     return true;
 });
 
-Route::any('/listen-to-twilio-verification-call-failed' , function(Request $request){
+Route::any('/telnyx-webhook' , function(Request $request){
     // 14157234000
-    Log::info('listen-to-twilio-verification-call-failed');
-    Log::info($request->ip());
+    Log::info('telnyx-webhook');
+    Log::info($request);
     return true;
 });
 Route::any('/listen-to-twilio-verification-call-progress' , function(Request $request){

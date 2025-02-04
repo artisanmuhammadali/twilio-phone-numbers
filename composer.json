@@ -9,6 +9,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "telnyx/telnyx-php": "^3.0",
         "twilio/sdk": "^8.3"
     },
     "require-dev": {
