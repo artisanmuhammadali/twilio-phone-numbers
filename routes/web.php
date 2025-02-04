@@ -54,9 +54,9 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
         $verification = NumberVerification::where('number', $to)->latest()->first();
         Log::info('get otp from db');
         if($verification){
-            $voice = 
+            $voice = $verification->voice;
             $response = new VoiceResponse();
-            $response->play('https://api.twilio.com/cowbell.mp3');
+            $response->play($voice);
 
             return $response;
             // return true;
