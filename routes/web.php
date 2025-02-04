@@ -1,5 +1,6 @@
 <?php
 
+use App\Library\VoiceRSS;
 use App\Models\NumberVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +30,20 @@ Route::get('/verify-number/{phone_number}', function () {
         'code'=>$data['validationCode'],
         'callSid'=>$data['callSid']
     ]);
-    return $data;
+
+    $tts = new VoiceRSS;
+    $voice = $tts->speech([
+        'key' => env('VOICE_RSS_API_KEY'),
+        'hl' =>  'en-gb:Alice',
+        'src' => $data['validationCode'],
+        'r' => '0',
+        'c' => 'mp3',
+        'f' => '44khz_16bit_stereo',
+        'ssml' => 'false',
+        'b64' => 'false'
+    ]);
+
+    return $voice;
 });
 
 
