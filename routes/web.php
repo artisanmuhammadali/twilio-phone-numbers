@@ -11,13 +11,13 @@ Route::get('/', function () {
     return 'welcome';
 });
 Route::get('/verify-number/{phone_number}', function () {
-    $number = request()->phone_number;
+    $number = '+'.request()->phone_number;
     
     $sid = env('TWILIO_ACC_ID');
     $token = env('TWILIO_AUTH_TOKEN');
     $twilio = new Client($sid, $token);
     $validation_request = $twilio->validationRequests->create(
-        "+".$number,
+        $number,
         [
             "friendlyName" => "Third Party VOIP Number",
             "statusCallback" => env('TWILIO_CALLBACK_URL'),
@@ -36,12 +36,25 @@ Route::get('/verify-number/{phone_number}', function () {
 Route::any('/listen-to-twilio-verification-call' , function(Request $request){
     // 14157234000
     Log::info('listen-to-twilio-verification-call');
-    Log::info($request);
-    Log::info($request->ip());
-    // $response = new VoiceResponse();
-    // $response->say('12', ['loop' => 2]);
-    // $response->play('12', ['digits' => '12']);
-    // return $response;
+    $from = $request['data']['payload']['from'];
+    $event = $request['data']['event_type'];
+    Log::info($from);
+
+    if($from == '+14157234000' && $event == 'call.answered'){
+        Log::info('call identified');
+        $to = $request['data']['payload']['to'];
+        $verification = NumberVerification::where('number', $to)->latest()->first();
+        Log::info('get otp from db');
+        if($verification){
+            $formattedString = implode(' ', str_split($verification->code));
+            $response = new VoiceResponse();
+            $response->say($formattedString);
+            Log::info($response);
+            // return $response;
+            return true;
+        }
+    }
+    
     return true;
 });
 
@@ -64,4 +77,9 @@ Route::any('/receive-verification-callback' , function(Request $request){
     NumberVerification::where('CallSid', $request->CallSid)->update(['response'=>json_encode($request->all()) , 'status'=>$request->VerificationStatus]);
     Log::info($request);
     return true;
+});
+
+Route::any('/get-response' , function(Request $request){
+  $verification = NumberVerification::all();  
+  return response()->json($verification);
 });
