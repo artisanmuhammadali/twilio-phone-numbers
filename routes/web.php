@@ -50,8 +50,8 @@ Route::any('/listen-to-twilio-verification-call' , function(Request $request){
             $response = new VoiceResponse();
             $response->say($formattedString);
             Log::info($response);
-            // return $response;
-            return true;
+            return $response;
+            // return true;
         }
     }
     
