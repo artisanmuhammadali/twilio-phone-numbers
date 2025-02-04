@@ -31,7 +31,19 @@ Route::get('/verify-number/{phone_number}', function () {
     $data = $validation_request->toArray();
     
     $formattedString = implode(' ', str_split($data['validationCode']));
-    $speechFilelink = Str::toAudio($formattedString);
+    function numberToWords($input) {
+        $numbers = explode(' ', $input);
+        $formatter = new NumberFormatter('en', NumberFormatter::SPELLOUT);
+        
+        $words = array_map(function($number) use ($formatter) {
+            return $formatter->format($number);
+        }, $numbers);
+    
+        return implode(' ', $words);
+    }
+    
+    $output = numberToWords($formattedString);
+    $speechFilelink = Str::toAudio($output);
     $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$speechFilelink);
     NumberVerification::create([
         'number'=> $number,
