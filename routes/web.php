@@ -95,7 +95,10 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer $token",
-            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
+            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer",[
+                    "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+                    "webhook_url_method" => "POST",
+                ]);
 
             Log::info("Call Answered: " . $response->body());
         }
