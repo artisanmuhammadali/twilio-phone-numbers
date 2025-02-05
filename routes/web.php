@@ -94,8 +94,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer $token",
             ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
-                "payload" => "Your verification code is " . $verification->code_as_text,
-                "voice" => "female"
+                "payload" => $verification->code_as_text,
             ]);
 
             Log::info("Speaking OTP: " . $response->body());
