@@ -62,7 +62,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
     Log::info('Incoming call webhook received');
     Log::info($request->all());
 
-    $from = $request['data']['payload']['from'];
+    $from = array_key_exists('from' ,$request['data']['payload']) ?  $request['data']['payload']['from'] : '';
     $event = $request['data']['event_type'];
 
     // Answer the call when it's initiated
