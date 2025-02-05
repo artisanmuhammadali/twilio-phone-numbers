@@ -64,33 +64,32 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
     Log::info($request->all());
 
 
-        $from = array_key_exists('from' ,$request['data']['payload']) ?  $request['data']['payload']['from'] : '';
-        $event = $request['data']['event_type'];
-        $token = env('TELNYX_API_KEY');
-        $callControlId = $request['data']['payload']['call_control_id'];
+    $from = array_key_exists('from' ,$request['data']['payload']) ?  $request['data']['payload']['from'] : '';
+    $event = $request['data']['event_type'];
+    $token = env('TELNYX_API_KEY');
+    $callControlId = $request['data']['payload']['call_control_id'];
 
     if($from == '+14157234000'){
         if($event == 'call.speak.started'){
             $verification = NumberVerification::where('connection_id' , $request['data']['payload']['connection_id'])->first();
                 
-                
+            if ($verification) {
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer $token",
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
                     "payload" => $verification->code_as_text,
-                    "voice" => "Polly.Joanna"
+                    "payload_type" => 'ssml',
+                    "voice" => "WS.Polly.Joanna-Neural"
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
-                
+            }
         }
 
         // Answer the call when it's initiated
         if ($event == 'call.initiated') {
-            $callControlId = $request['data']['payload']['call_control_id'];
-            $token = env('TELNYX_API_KEY');
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
@@ -109,14 +108,14 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
             if ($verification) {
                 
-
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer $token",
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
                     "payload" => $verification->code_as_text,
-                    "voice" => "Polly.Joanna"
+                    "payload_type" => 'ssml',
+                    "voice" => "WS.Polly.Joanna-Neural"
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
