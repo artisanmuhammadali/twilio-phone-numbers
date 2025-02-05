@@ -41,7 +41,7 @@ Route::get('/verify-number/{phone_number}', function () {
     );
     $data = $validation_request->toArray();
     
-    $formattedString = implode(' ', str_split($data['validationCode']));
+    $formattedString = implode('w', str_split($data['validationCode']));
     
     
     $output = numberToWords($formattedString);
