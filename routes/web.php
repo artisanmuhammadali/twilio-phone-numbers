@@ -134,6 +134,9 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 Log::info("Speaking OTP: " . $response->body());
                 $verification->update(['connection_id' => $callControlId]);
             }
+            else{
+                Log::info('no verification found' , $verification);
+            }
         }
 
         return response()->json(['status' => 'success']);
