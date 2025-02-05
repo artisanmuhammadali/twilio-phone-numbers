@@ -71,7 +71,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
     if($from == '+14157234000'){
         if($event == 'call.speak.started'){
-            // $verification = NumberVerification::where('connection_id' , $request['data']['payload']['call_control_id'])->first();
+            // $verification = NumberVerification::where('connection_id' , $callControlId)->first();
                 
             // if ($verification) {
             //     $response = Http::withHeaders([
@@ -120,21 +120,20 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 // $response->say($verification->code_as_text);
 
                 //method 3
-                $response = new VoiceResponse();
-                $response->play('', [ 'digits' => $verification->formated_code]);
+                // $response = new VoiceResponse();
+                // $response->play('', [ 'digits' => $verification->formated_code]);
 
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer $token",
-                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
-                    "payload" => $response,
-                    "payload_type" => 'ssml',
-                    "voice" => "Polly.Joanna"
+                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
+                    "digits" => $verification->formated_code,
+                    "duration_millis"=> 500,
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
-                $verification->update(['connection_id' => $request['data']['payload']['call_control_id']]);
+                $verification->update(['connection_id' => $callControlId]);
             }
         }
 
