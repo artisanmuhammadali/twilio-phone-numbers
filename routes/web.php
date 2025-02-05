@@ -58,56 +58,103 @@ Route::get('/verify-number/{phone_number}', function () {
     return $voice;
 });
 
+Route::any('/listen-to-twilio-verification-call', function(Request $request) {
+    Log::info('Incoming call webhook received');
+    Log::info($request->all());
 
-Route::any('/listen-to-twilio-verification-call' , function(Request $request){
-    // 14157234000
-    Log::info('listen-to-twilio-verification-call');
     $from = $request['data']['payload']['from'];
     $event = $request['data']['event_type'];
-    Log::info($request);
-    Log::info($event);
-    // if($event == 'call.initiated')
-    // {
-    //     $callControlId = $request['data']['payload']['call_control_id'];
-    //     $token = env('TELNYX_API_KEY');
 
-    //     $response = Http::withHeaders([
-    //         'Content-Type' => 'application/json',
-    //         'Accept' => 'application/json',
-    //         'Authorization' => "Bearer $token",
-    //     ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer", [
-    //         "client_state" => 'aGF2ZSBhIG5pY2UgZGF5ID1d',
-    //         "command_id" => '891510ac-f3e4-11e8-af5b-de00688a4901',
-    //         "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
-    //         "webhook_url_method" => "POST",
-    //         "send_silence_when_idle" => true
-    //     ]);
-    //     Log::info($response);
-    // }
-    if($from == '+14157234000' && $event == 'call.initiated'){
+    // Answer the call when it's initiated
+    if ($event == 'call.initiated') {
+        $callControlId = $request['data']['payload']['call_control_id'];
+        $token = env('TELNYX_API_KEY');
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => "Bearer $token",
+        ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
+
+        Log::info("Call Answered: " . $response->body());
+    }
+
+    // Speak OTP when call is answered
+    if ($from == '+14157234000' && $event == 'call.answered') {
         $to = $request['data']['payload']['to'];
         $verification = NumberVerification::where('number', $to)->latest()->first();
-        Log::info('get otp from db');
-        if($verification){
-            //method 1
-            // $response = new VoiceResponse();
-            // $response->play($verification->voice);
+        Log::info('Fetching OTP from database');
 
-            //method 2
-            // $response = new VoiceResponse();
-            // $response->say($verification->code_as_text);
+        if ($verification) {
+            $callControlId = $request['data']['payload']['call_control_id'];
+            $token = env('TELNYX_API_KEY');
 
-            //method 3
-            $response = new VoiceResponse();
-            $response->play('', [ 'digits' => $verification->formated_code]);
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => "Bearer $token",
+            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
+                "payload" => "Your verification code is " . $verification->code_as_text,
+                "voice" => "female"
+            ]);
 
-            Log::info($response);
-            return $response;
+            Log::info("Speaking OTP: " . $response->body());
         }
     }
-    
-    return true;
+
+    return response()->json(['status' => 'success']);
 });
+
+
+// Route::any('/listen-to-twilio-verification-call' , function(Request $request){
+//     // 14157234000
+//     Log::info('listen-to-twilio-verification-call');
+//     $from = $request['data']['payload']['from'];
+//     $event = $request['data']['event_type'];
+//     Log::info($request);
+//     Log::info($event);
+//     // if($event == 'call.initiated')
+//     // {
+//     //     $callControlId = $request['data']['payload']['call_control_id'];
+//     //     $token = env('TELNYX_API_KEY');
+
+//     //     $response = Http::withHeaders([
+//     //         'Content-Type' => 'application/json',
+//     //         'Accept' => 'application/json',
+//     //         'Authorization' => "Bearer $token",
+//     //     ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer", [
+//     //         "client_state" => 'aGF2ZSBhIG5pY2UgZGF5ID1d',
+//     //         "command_id" => '891510ac-f3e4-11e8-af5b-de00688a4901',
+//     //         "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+//     //         "webhook_url_method" => "POST",
+//     //         "send_silence_when_idle" => true
+//     //     ]);
+//     //     Log::info($response);
+//     // }
+//     if($from == '+14157234000' && $event == 'call.answered'){
+//         $to = $request['data']['payload']['to'];
+//         $verification = NumberVerification::where('number', $to)->latest()->first();
+//         Log::info('get otp from db');
+//         if($verification){
+//             //method 1
+//             // $response = new VoiceResponse();
+//             // $response->play($verification->voice);
+
+//             //method 2
+//             // $response = new VoiceResponse();
+//             // $response->say($verification->code_as_text);
+
+//             //method 3
+//             $response = new VoiceResponse();
+//             $response->play('', [ 'digits' => $verification->formated_code]);
+
+//             Log::info($response);
+//             return $response;
+//         }
+//     }
+    
+//     return true;
+// });
 
 Route::any('/telnyx-webhook' , function(Request $request){
     // 14157234000
