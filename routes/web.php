@@ -89,26 +89,26 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
             if ($verification) {
                 
 
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => "Bearer $token",
-                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
-                    "digits" => $verification->formated_code,
-                ]);
-
-                Log::info("Send DTMF: " . $response->body());
-
-
                 // $response = Http::withHeaders([
                 //     'Content-Type' => 'application/json',
                 //     'Accept' => 'application/json',
                 //     'Authorization' => "Bearer $token",
-                // ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
-                //     "payload" => $verification->code_as_text,
-                //     "voice" => "Polly.Joanna"
+                // ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
+                //     "digits" => $verification->formated_code,
                 // ]);
-                // Log::info("Speaking OTP: " . $response->body());
+
+                // Log::info("Send DTMF: " . $response->body());
+
+
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => "Bearer $token",
+                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
+                    "payload" => $verification->code_as_text,
+                    "voice" => "Polly.Joanna"
+                ]);
+                Log::info("Speaking OTP: " . $response->body());
 
                 $verification->update(['connection_id' => $callControlId]);
             }
