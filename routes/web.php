@@ -82,7 +82,6 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
         //     Log::info("Call Answered: " . $response->body());
         // }
         // Speak OTP when call is answered
-        if ($event == 'call.answered') {
             $to = $request['data']['payload']['to'];
             $verification = NumberVerification::where('number', $to)->latest()->first();
             Log::info('Fetching OTP from database');
@@ -101,22 +100,22 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 Log::info("Send DTMF: " . $response->body());
 
 
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => "Bearer $token",
-                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
-                    "payload" => $verification->code_as_text,
-                    "voice" => "Polly.Joanna"
-                ]);
-                Log::info("Speaking OTP: " . $response->body());
+                // $response = Http::withHeaders([
+                //     'Content-Type' => 'application/json',
+                //     'Accept' => 'application/json',
+                //     'Authorization' => "Bearer $token",
+                // ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
+                //     "payload" => $verification->code_as_text,
+                //     "voice" => "Polly.Joanna"
+                // ]);
+                // Log::info("Speaking OTP: " . $response->body());
 
                 $verification->update(['connection_id' => $callControlId]);
             }
             else{
                 Log::info('no verification found' , $verification , $to);
             }
-        }
+        
 
         return response()->json(['status' => 'success']);
     }
