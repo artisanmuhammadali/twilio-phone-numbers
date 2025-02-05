@@ -70,13 +70,17 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
     $callControlId = $request['data']['payload']['call_control_id'];
 
     if($from == '+14157234000'){
+        
         if ($event == 'call.initiated') {
             Log::info('Answering call...');
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer $token",
-            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
+            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer",[
+                    "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+                    "webhook_url_method" => "POST",
+                ]);
     
             Log::info("Call Answered: " . $response->body());
         }
