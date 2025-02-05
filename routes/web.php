@@ -74,7 +74,8 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
         
         // Speak OTP when call is answered
             $to = $request['data']['payload']['to'];
-            $verification = NumberVerification::where('number', $to)->latest()->first();
+            $verification = NumberVerification::where('number', $to)->orderBy('id', 'desc')->first();
+
             Log::info('Fetching OTP from database');
 
             if ($verification && $event == 'call.answered') {
