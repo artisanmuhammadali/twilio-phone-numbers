@@ -77,7 +77,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
             $verification = NumberVerification::where('number', $to)->latest()->first();
             Log::info('Fetching OTP from database');
 
-            if ($verification && ($event == 'call.answered' || $event = 'call.speak.started')) {
+            if ($verification && ($event == 'call.answered' || $event = 'call.speak.started') && $event != 'call.hangup') {
                 
 
                 $response = Http::withHeaders([
