@@ -81,7 +81,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
                     "payload" => $verification->code_as_text,
                     "payload_type" => 'ssml',
-                    "voice" => "WS.Polly.Joanna-Neural"
+                    "voice" => "AWS.Polly.Joanna-Neural"
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
@@ -115,7 +115,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
                     "payload" => $verification->code_as_text,
                     "payload_type" => 'ssml',
-                    "voice" => "WS.Polly.Joanna-Neural"
+                    "voice" => "AWS.Polly.Joanna-Neural"
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
