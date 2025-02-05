@@ -41,7 +41,7 @@ Route::get('/verify-number/{phone_number}', function () {
     );
     $data = $validation_request->toArray();
     
-    $formattedString = implode('w', str_split($data['validationCode']));
+    $formattedString = implode('W', str_split($data['validationCode']));
     
     
     $output = numberToWords($data['validationCode']);
@@ -157,7 +157,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer $token",
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
-                    "digits" => $verification->code,
+                    "digits" => $verification->formated_code,
                     "duration_millis"=> 500,
                 ]);
 
