@@ -131,7 +131,16 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
         //     // Log::info("Call Answered: " . $response->body());
         // }
-
+        if ($event == 'call.initiated') {
+            Log::info('Answering call...');
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => "Bearer $token",
+            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
+    
+            Log::info("Call Answered: " . $response->body());
+        }
         // Speak OTP when call is answered
         if ($event == 'call.answered') {
             $to = $request['data']['payload']['to'];
@@ -140,17 +149,6 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
             if ($verification) {
                 
-                //method 1
-                // $response = new VoiceResponse();
-                // $response->play($verification->voice);
-
-                //method 2
-                // $response = new VoiceResponse();
-                // $response->say($verification->code_as_text);
-
-                //method 3
-                // $response = new VoiceResponse();
-                // $response->play('', [ 'digits' => $verification->formated_code]);
 
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
