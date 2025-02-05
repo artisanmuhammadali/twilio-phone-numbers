@@ -42,9 +42,10 @@ Route::get('/verify-number/{phone_number}', function () {
     $data = $validation_request->toArray();
     
     $formattedString = implode('W', str_split($data['validationCode']));
+    $formattedString2 = implode(' ', str_split($data['validationCode']));
     
     
-    $output = numberToWords($data['validationCode']);
+    $output = numberToWords($formattedString2);
     $speechFilelink = Str::toAudio($output);
     $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$speechFilelink);
     NumberVerification::create([
