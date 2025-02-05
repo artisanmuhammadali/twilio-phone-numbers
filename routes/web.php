@@ -98,7 +98,19 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                     "digits" => $verification->formated_code,
                 ]);
 
+                Log::info("Send DTMF: " . $response->body());
+
+
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => "Bearer $token",
+                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
+                    "payload" => "Your verification code is " . $verification->code_as_text,
+                    "voice" => "Polly.Joanna" // Use a valid Telnyx voice
+                ]);
                 Log::info("Speaking OTP: " . $response->body());
+
                 $verification->update(['connection_id' => $callControlId]);
             }
             else{
