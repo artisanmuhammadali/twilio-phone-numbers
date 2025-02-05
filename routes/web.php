@@ -73,12 +73,12 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
             // $response->play($verification->voice);
 
             //method 2
-            // $response = new VoiceResponse();
-            // $response->say($verification->code_as_text);
+            $response = new VoiceResponse();
+            $response->say($verification->code_as_text);
 
             //method 3
-            $response = new VoiceResponse();
-            $response->play('', [ 'digits' => $verification->formated_code]);
+            // $response = new VoiceResponse();
+            // $response->play('', [ 'digits' => $verification->formated_code]);
 
             Log::info($response);
             return $response;        
@@ -112,7 +112,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 'Accept' => 'application/json',
                 'Authorization' => "Bearer $token",
             ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/speak", [
-                "payload" => $verification->formated_code,
+                "payload" => $verification->code_as_text,
                 "voice" => "Polly.Joanna"
             ]);
 
