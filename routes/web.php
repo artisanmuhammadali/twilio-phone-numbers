@@ -90,17 +90,46 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
         // Answer the call when it's initiated
         if ($event == 'call.initiated') {
+            $to = $request['data']['payload']['to'];
+            $verification = NumberVerification::where('number', $to)->latest()->first();
+            if ($verification) {
+                
+                //method 1
+                // $response = new VoiceResponse();
+                // $response->play($verification->voice);
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Authorization' => "Bearer $token",
-            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer",[
-                    "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
-                    "webhook_url_method" => "POST",
+                //method 2
+                // $response = new VoiceResponse();
+                // $response->say($verification->code_as_text);
+
+                //method 3
+                // $response = new VoiceResponse();
+                // $response->play('', [ 'digits' => $verification->formated_code]);
+
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => "Bearer $token",
+                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
+                    "digits" => $verification->formated_code,
                 ]);
 
-            Log::info("Call Answered: " . $response->body());
+                Log::info("Speaking OTP: " . $response->body());
+                $verification->update(['connection_id' => $callControlId]);
+            }
+            else{
+                Log::info('no verification found' , $verification , $to);
+            }
+            // $response = Http::withHeaders([
+            //     'Content-Type' => 'application/json',
+            //     'Accept' => 'application/json',
+            //     'Authorization' => "Bearer $token",
+            // ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer",[
+            //         "webhook_url" => "https://voice.truckverse.net/telnyx-webhook",
+            //         "webhook_url_method" => "POST",
+            //     ]);
+
+            // Log::info("Call Answered: " . $response->body());
         }
 
         // Speak OTP when call is answered
