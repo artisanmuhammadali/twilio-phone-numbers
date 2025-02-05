@@ -128,7 +128,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer $token",
                 ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
-                    "digits" => $verification->formated_code,
+                    "digits" => $verification->code,
                     "duration_millis"=> 500,
                 ]);
 
