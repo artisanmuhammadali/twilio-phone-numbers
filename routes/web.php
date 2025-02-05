@@ -53,7 +53,8 @@ Route::get('/verify-number/{phone_number}', function () {
         'callSid'=>$data['callSid'],
         'voice'=>$voice,
         'formated_code'=>$formattedString,
-        'code_as_text'=>$output
+        'code_as_text'=>$output,
+        'connection_id'=>'test'
     ]);
     return $voice;
 });
