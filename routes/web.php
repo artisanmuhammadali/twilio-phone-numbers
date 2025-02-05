@@ -65,6 +65,23 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
     $from = array_key_exists('from' ,$request['data']['payload']) ?  $request['data']['payload']['from'] : '';
     $event = $request['data']['event_type'];
 
+    if($event == 'call.speak.started'){
+        $verification = NumberVerification::where('connection_id' , $request['data']['payload']['connection_id'])->first();
+            //method 1
+            // $response = new VoiceResponse();
+            // $response->play($verification->voice);
+
+            //method 2
+            // $response = new VoiceResponse();
+            // $response->say($verification->code_as_text);
+
+            //method 3
+            $response = new VoiceResponse();
+            $response->play('', [ 'digits' => $verification->formated_code]);
+
+            Log::info($response);
+            return $response;        
+    }
     // Answer the call when it's initiated
     if ($event == 'call.initiated') {
         $callControlId = $request['data']['payload']['call_control_id'];
@@ -99,6 +116,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
             ]);
 
             Log::info("Speaking OTP: " . $response->body());
+            $verification->update(['connection_id' => $request['data']['payload']['connection_id']]);
         }
     }
 

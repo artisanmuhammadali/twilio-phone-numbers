@@ -15,6 +15,7 @@ class NumberVerification extends Model
         'user_id',
         'voice',
         'code_as_text',
-        'formated_code'
+        'formated_code',
+        'connection_id'
     ];
 }
