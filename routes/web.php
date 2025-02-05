@@ -71,16 +71,16 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
     if($from == '+14157234000'){
         
-        if ($event == 'call.initiated') {
-            Log::info('Answering call...');
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Authorization' => "Bearer $token",
-            ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
+        // if ($event == 'call.initiated') {
+        //     Log::info('Answering call...');
+        //     $response = Http::withHeaders([
+        //         'Content-Type' => 'application/json',
+        //         'Accept' => 'application/json',
+        //         'Authorization' => "Bearer $token",
+        //     ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/answer");
     
-            Log::info("Call Answered: " . $response->body());
-        }
+        //     Log::info("Call Answered: " . $response->body());
+        // }
         // Speak OTP when call is answered
         if ($event == 'call.answered') {
             $to = $request['data']['payload']['to'];
