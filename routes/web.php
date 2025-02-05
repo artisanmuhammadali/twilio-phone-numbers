@@ -44,7 +44,7 @@ Route::get('/verify-number/{phone_number}', function () {
     $formattedString = implode('w', str_split($data['validationCode']));
     
     
-    $output = numberToWords($formattedString);
+    $output = numberToWords($data['validationCode']);
     $speechFilelink = Str::toAudio($output);
     $voice = str_replace('/var/www/twilio-phone-numbers/public/' , 'https://voice.truckverse.net/' ,$speechFilelink);
     NumberVerification::create([
