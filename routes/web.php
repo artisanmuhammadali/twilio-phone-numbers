@@ -71,7 +71,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
 
     if($from == '+14157234000'){
         if($event == 'call.speak.started'){
-            $verification = NumberVerification::where('connection_id' , $request['data']['payload']['connection_id'])->first();
+            $verification = NumberVerification::where('connection_id' , $request['data']['payload']['call_control_id'])->first();
                 
             if ($verification) {
                 $response = Http::withHeaders([
@@ -119,7 +119,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 ]);
 
                 Log::info("Speaking OTP: " . $response->body());
-                $verification->update(['connection_id' => $request['data']['payload']['connection_id']]);
+                $verification->update(['connection_id' => $request['data']['payload']['call_control_id']]);
             }
         }
 
