@@ -135,7 +135,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
                 $verification->update(['connection_id' => $callControlId]);
             }
             else{
-                Log::info('no verification found' , $verification);
+                Log::info('no verification found' , $verification , $to);
             }
         }
 
