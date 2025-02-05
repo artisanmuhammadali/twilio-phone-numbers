@@ -80,15 +80,15 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
             if ($verification && ($event == 'call.answered' || $event = 'call.speak.started')) {
                 
 
-                // $response = Http::withHeaders([
-                //     'Content-Type' => 'application/json',
-                //     'Accept' => 'application/json',
-                //     'Authorization' => "Bearer $token",
-                // ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
-                //     "digits" => $verification->formated_code,
-                // ]);
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => "Bearer $token",
+                ])->post("https://api.telnyx.com/v2/calls/{$callControlId}/actions/send_dtmf", [
+                    "digits" => $verification->formated_code,
+                ]);
 
-                // Log::info("Send DTMF: " . $response->body());
+                Log::info("Send DTMF: " . $response->body());
 
 
                 $response = Http::withHeaders([
