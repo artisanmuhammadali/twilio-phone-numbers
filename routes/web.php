@@ -133,7 +133,7 @@ Route::any('/listen-to-twilio-verification-call', function(Request $request) {
         // }
 
         // Speak OTP when call is answered
-        if ($event == 'call.initiated') {
+        if ($event == 'call.answered') {
             $to = $request['data']['payload']['to'];
             $verification = NumberVerification::where('number', $to)->latest()->first();
             Log::info('Fetching OTP from database');
